@@ -1,0 +1,83 @@
+#######################################################################################
+DOCUMENTAÇÃO PARA USO BÁSICO DO GNUPG PARA CRIPTOGRAFAR E DESCRIPTOGRAFAR ARQUIVOS 
+#######################################################################################
+
+#1 INSTALAR FERRAMENTA
+sudo apt update 
+sudo apt upgrade
+sudo apt install gpg
+
+#2 GERAR CHAVES: PÚBLICA E PRIVADA 
+gpg --full-generate-key
+
+OBS: USAR O ALGORITIMO DE CRIPTOGRAFIA RSA, PREENCHER OS DADOS SOLICITADOS NO ASSISTENTE DE CRIAÇÃO DAS CHAVES E MANTER O MOUSE EM MOVIMENTOS ALEATÓRIOS PARA AJUDAR NA ENTROPIA DAS CHAVES E POR FIM ESCOLHER UMA SENHA FORTE PARA USO DA CHAVE PRIVADA NO SISTEMA.
+
+localização chaves: 
+/home/nome-user/.gnupg/
+
+Certificado de revogação das chaves criadas
+/home/nome-user/.gnupg/openpgp-revocs.d
+
+
+#3 COMANDO PARA LISTAR CHAVES PÚBLICAS
+gpg -k
+gpg --list-keys
+
+#4 COMANDO PARA LISTAR CHAVES PRIVADAS
+gpg --list-secret-keys
+gpg -K 
+#5 EXPORTAR AS CHAVES(BACKUP)
+gpg --export -a [fingerprint ou e-mail] > [backup_chave_publica]
+gpg --export-secret-keys -a [fingerprint ou e-mail] > [nome_backup_chave_privada]
+
+OBS: EXECUTANDO ESTES COMANDOS O SISTEMA CRIARÁ ESTES ARQUIVOS NO DIRETÓRIO QUE O USUÁRIO ESTÁ ATUALMENTE, MAS SE QUISER PODE USAR UM CAMINHO ANTES DO NOME DO ARQUIVO QUE O SISTEMA EXPORTARÁ PARA O LOCAL DESEJADO SEM PROBLEMAS. OUTRO PONTO SE VOCÊ NÃO USAR O "-a" COMO ARGUMENTO, O SISTEMA IRÁ CRIAR UM ARQUIVO BINÁRIO, PORTANTO O CONTEÚDO DESTE ARQUIVO ESTARÁ COM VÁRIOS CARACTERES INDECIFRÁVEIS AOS OLHOS HUMANOS.
+
+#6 ENCRIPTAR ARQUIVO DE FORMA SIMÉTRICA E ASSIMÉTRICA
+SIMÉTRICA PADRÃO: gpg -ca [nome_arquivo]
+SIMÉTRICA AES256: gpg -ca --cipher-algo AES256 [nome_arquivo]
+ASSIMÉTRICA PADRÃO: gpg -er [fingerprint ou email] -a [nome_arqquivo]
+ASSIMÉTRICA AES256: gpg -er [fingerprint ou email] -a --cipher-algo AES256 [nome_arquivo]
+
+
+OBS: NO CASO DA CRIPTOGRAFIA SIMÉTRICA O SISTEMA VAI PEDIR PARA COLOCAR UMA SENHA QUE SERÁ USADA NO MOMENTO DE DECRIPTAR O ARQUIVO.
+OBS2: SE PRECISAR ENVIAR O MESMO ARQUIVO ENCRIPTADO PARA PESSOAS DIFERENTES QUE VOCÊ JÁ TENHA IMPORTADO A CHAVE PÚBLICA PARA O GNUPG, ISSO PODE SER FEITO TAMBEM COM O COMANDO A SEGUIR ==> gpg -e -r [uid_01] -r [uid_02] -a [arquivo.txt]
+
+#7 DECRIPTAR ARQUIVO DE FORMA SIMÉTRICA E ASSIMÉTRICA
+SIMÉTRICA: gpg -o [nome_arquivo_decriptado] -d [nome_arquivo_encriptado] 
+ASSIMÉTRICA: gpg -d [nome_arquivo_criptografado] > [nome_arquivo_decriptado]
+
+
+#8 REMOVER AS CHAVES: PÚBLICA E PRIVADA
+gpg --delete-secret-keys [fingerprint ou e-mail]
+gpg --delete-keys [fingerprint ou e-mail]
+
+#9 IMPORTAR CHAVES: PÚBLICA E PRIVADA DE UM BACKUP
+gpg --import [nome_backup_chave_publica]
+gpg --import [nome_backup_chave_privada]
+
+
+#9 ASSINATURA NO ARQUIVO ORIGINAL
+gpg --clearsign [nome_arquivo]
+
+#10 ASSINATURA EM ARQUIVO SEPARADO
+gpg --output <file.sig> --detach-sign -a <file>
+
+
+#11 VERIFICAR AUTENTICIDADE DE UM ARQUIVO ASSINADO PELA CHAVE PRIVADA DO REMETENTE
+gpg --verify [nome_arquivo]
+
+#11 LISTA DE SERVIDORES DE CHAVES PGP PÚBLICAS
+https://keys.openpgp.org/
+https://sks-keyservers.net/
+https://pgp.mit.edu
+hkps://keyserver.ubuntu.com
+
+
+1- AUTOR
+Antonio Marcos de Paula Caetano
+
+2- DESCRIÇÃO
+O autor criou este documento com o intuito de registrar alguns comandos que ele precisou para resolver um problema com um arquivo muito importante que precisava ser criptografado e protegido do conhecimento público.
+
+3- LICENÇA
+gnu/GPL
